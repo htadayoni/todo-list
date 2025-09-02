@@ -1,10 +1,10 @@
-import FilterItem from "./filterItem";
+import FilterItem from './filterItem';
 import {
   categories,
   priorities,
   statuses,
   sortOptions,
-} from "./../../constants/filters";
+} from '../../constants/filters';
 
 export default function Filters() {
   return (
