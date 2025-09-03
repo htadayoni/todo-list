@@ -1,3 +1,5 @@
+import React from 'react';
+
 export default function FilterItem({ title, listItems }) {
   return (
     <div>
@@ -6,7 +8,7 @@ export default function FilterItem({ title, listItems }) {
       </label>
       <select className="block w-full border border-gray-300 rounded-md p-2">
         {listItems &&
-          listItems.map((item) => {
+          listItems.map(item => {
             return (
               <option key={item.value} value={item.value}>
                 {item.label}

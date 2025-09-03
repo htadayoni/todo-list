@@ -1,3 +1,5 @@
+import React from 'react';
+
 export default function Chip({ label, color, textColor }) {
   return (
     <div

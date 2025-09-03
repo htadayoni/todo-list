@@ -1,7 +1,8 @@
-import Search from './../components/search';
-import Filters from './../components/filters';
-import Overview from './../components/overview';
-import TasksList from './../components/tasks';
+import Search from '../components/search';
+import Filters from '../components/filters';
+import Overview from '../components/overview';
+import TasksList from '../components/tasks';
+import React from 'react';
 
 export default function Home() {
   return (

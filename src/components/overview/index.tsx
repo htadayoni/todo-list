@@ -1,3 +1,4 @@
+import React from 'react';
 import Block from '../layout/block';
 import NumberBlock from './numberBlock';
 
