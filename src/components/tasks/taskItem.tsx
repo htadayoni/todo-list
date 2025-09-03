@@ -1,3 +1,4 @@
+import React from 'react';
 import Block from '../layout/block';
 import Chip from '../ui/chip';
 import { priorityChip, statusChip } from '../../constants/tasks';

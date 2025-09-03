@@ -4,8 +4,9 @@ import {
   priorities,
   statuses,
   sortOptions,
-} from './../../constants/filters';
+} from '../../constants/filters';
 import Block from '../layout/block';
+import React from 'react';
 
 export default function Filters() {
   return (
