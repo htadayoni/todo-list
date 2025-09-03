@@ -1,6 +1,7 @@
-import Search from '@/components/search';
+import Search from './../components/search';
 import Filters from './../components/filters';
 import Overview from './../components/overview';
+import TasksList from './../components/tasks';
 
 export default function Home() {
   return (
@@ -10,6 +11,7 @@ export default function Home() {
           <Filters />
           <Search />
           <Overview />
+          <TasksList />
         </div>
       </div>
     </div>
