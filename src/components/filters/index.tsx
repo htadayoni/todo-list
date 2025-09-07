@@ -6,7 +6,7 @@ import {
   sortOptions,
 } from '../../constants/filters';
 import Block from '../layout/block';
-import React from 'react';
+import React, { memo } from 'react';
 
 type FiltersProps = {
   categoryFilter: string | null;
@@ -19,7 +19,7 @@ type FiltersProps = {
   setSortOption: (value: string) => void;
 };
 
-export default function Filters({
+const Filters = memo(function Filters({
   categoryFilter,
   setCategoryFilter,
   priorityFilter,
@@ -31,7 +31,7 @@ export default function Filters({
 }: FiltersProps) {
   return (
     <Block>
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-4 gap-4" role="group" aria-label="فیلترهای وظایف">
         <FilterItem
           title="دسته بندی"
           listItems={categories}
@@ -59,4 +59,6 @@ export default function Filters({
       </div>
     </Block>
   );
-}
+});
+
+export default Filters;
