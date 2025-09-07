@@ -1,8 +1,12 @@
 import React from 'react';
 import TaskItem from './taskItem';
-import { taskList } from '../../mocks/tasks';
+import { TaskItemType } from '../../types/tasks';
 
-export default function TasksList() {
+type TasksListProps = {
+  taskList: TaskItemType[];
+};
+
+export default function TasksList({ taskList }: TasksListProps) {
   return (
     <>
       {taskList.map(task => (

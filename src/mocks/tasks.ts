@@ -18,7 +18,7 @@ export const taskList: TaskItemType[] = [
     dueDate: new Date('2023-10-15'),
     createdAt: new Date('2023-09-05'),
     priority: 'medium',
-    status: 'todo',
+    status: 'notStarted',
     category: 'work',
   },
   {
@@ -28,7 +28,7 @@ export const taskList: TaskItemType[] = [
     dueDate: new Date('2023-10-20'),
     createdAt: new Date('2023-09-10'),
     priority: 'low',
-    status: 'todo',
+    status: 'notStarted',
     category: 'work',
   },
   {
@@ -38,7 +38,7 @@ export const taskList: TaskItemType[] = [
     dueDate: new Date('2023-10-25'),
     createdAt: new Date('2023-09-15'),
     priority: 'high',
-    status: 'todo',
+    status: 'notStarted',
     category: 'work',
   },
   {
@@ -48,7 +48,7 @@ export const taskList: TaskItemType[] = [
     dueDate: new Date('2023-10-30'),
     createdAt: new Date('2023-09-20'),
     priority: 'medium',
-    status: 'todo',
-    category: 'work',
+    status: 'notStarted',
+    category: 'fun',
   },
 ];
