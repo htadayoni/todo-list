@@ -1,10 +1,13 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "ES2022",
     "lib": [
       "dom",
       "dom.iterable",
-      "es6"
+      "ES2022",
+      "ES2022.Array",
+      "ES2022.Object",
+      "ES2022.String"
     ],
     "allowJs": true,
     "skipLibCheck": true,
@@ -13,6 +16,8 @@
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
     "module": "esnext",
     "moduleResolution": "node",
     "resolveJsonModule": true,

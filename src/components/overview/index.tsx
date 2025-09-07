@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo, useMemo } from 'react';
 import Block from '../layout/block';
 import NumberBlock from './numberBlock';
 import { TaskItemType } from '../../types/tasks';
@@ -8,29 +8,41 @@ type OverviewProps = {
   taskList: TaskItemType[];
 };
 
-export default function Overview({ taskList }: OverviewProps) {
+const Overview = memo(function Overview({ taskList }: OverviewProps) {
+  const stats = useMemo(() => ({
+    total: taskList?.length || 0,
+    notStarted: countTasksByStatus(taskList, 'notStarted'),
+    inProgress: countTasksByStatus(taskList, 'inProgress'),
+    done: countTasksByStatus(taskList, 'done'),
+  }), [taskList]);
+
   return (
     <Block>
       <div className="flex justify-between items-center">
-        <h2 className="text-xl font-bold">نمای کلی</h2>
-        <div className="grid grid-cols-4 gap-4">
+        <h2 className="text-xl font-bold" id="overview-title">نمای کلی</h2>
+        <div
+          className="grid grid-cols-4 gap-4"
+          role="group"
+          aria-labelledby="overview-title"
+          aria-label="آمار وظایف"
+        >
           <NumberBlock
-            number={taskList?.length || 0}
+            number={stats.total}
             title="مجموع"
             color="blue"
           />
           <NumberBlock
-            number={countTasksByStatus(taskList, 'notStarted')}
+            number={stats.notStarted}
             title="در انتظار"
             color="yellow"
           />
           <NumberBlock
-            number={countTasksByStatus(taskList, 'inProgress')}
+            number={stats.inProgress}
             title="در حال انجام"
             color="green"
           />
           <NumberBlock
-            number={countTasksByStatus(taskList, 'done')}
+            number={stats.done}
             title="تکمیل شده"
             color="red"
           />
@@ -38,4 +50,6 @@ export default function Overview({ taskList }: OverviewProps) {
       </div>
     </Block>
   );
-}
+});
+
+export default Overview;
