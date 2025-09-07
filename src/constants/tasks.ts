@@ -1,3 +1,5 @@
+import { StatusType } from '../types/tasks';
+
 type ChipType = { label: string; color: string; textColor: string };
 
 export const priorityChip: Record<string, ChipType> = {
@@ -18,8 +20,8 @@ export const priorityChip: Record<string, ChipType> = {
   },
 };
 
-export const statusChip: Record<string, ChipType> = {
-  todo: {
+export const statusChip: Record<StatusType, ChipType> = {
+  notStarted: {
     label: 'در انتظار',
     color: 'bg-blue-300',
     textColor: 'text-blue-800',
