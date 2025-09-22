@@ -1,7 +1,7 @@
 import { useState, useMemo, useCallback } from 'react';
-import { TaskItemType } from '../types/tasks';
+import { taskList } from '../mocks/tasks';
 
-export interface TaskFilters {
+export type TaskFilters = {
     searchText: string;
     categoryFilter: string;
     priorityFilter: string;
@@ -9,7 +9,7 @@ export interface TaskFilters {
     sortOption: string;
 }
 
-export interface TaskFilterActions {
+export type TaskFilterActions = {
     setSearchText: (value: string) => void;
     setCategoryFilter: (value: string) => void;
     setPriorityFilter: (value: string) => void;
@@ -18,7 +18,7 @@ export interface TaskFilterActions {
     resetFilters: () => void;
 }
 
-export function useTaskFilters(taskList: TaskItemType[]) {
+export function useTaskFilters() {
     const [searchText, setSearchText] = useState<string>('');
     const [categoryFilter, setCategoryFilter] = useState<string>('all');
     const [priorityFilter, setPriorityFilter] = useState<string>('all');

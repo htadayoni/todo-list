@@ -7,54 +7,36 @@ import {
 } from '../../constants/filters';
 import Block from '../layout/block';
 import React, { memo } from 'react';
+import { useTaskFiltersContext } from '../../contexts/TaskFiltersContext';
 
-type FiltersProps = {
-  categoryFilter: string | null;
-  setCategoryFilter: (value: string) => void;
-  priorityFilter: string | null;
-  setPriorityFilter: (value: string) => void;
-  statusFilter: string | null;
-  setStatusFilter: (value: string) => void;
-  sortOption: string | null;
-  setSortOption: (value: string) => void;
-};
-
-const Filters = memo(function Filters({
-  categoryFilter,
-  setCategoryFilter,
-  priorityFilter,
-  setPriorityFilter,
-  statusFilter,
-  setStatusFilter,
-  sortOption,
-  setSortOption,
-}: FiltersProps) {
+const Filters = memo(function Filters() {
+  const { filters, actions } = useTaskFiltersContext();
   return (
     <Block>
       <div className="grid grid-cols-4 gap-4" role="group" aria-label="فیلترهای وظایف">
         <FilterItem
           title="دسته بندی"
           listItems={categories}
-          currentValue={categoryFilter}
-          onChange={setCategoryFilter}
+          currentValue={filters.categoryFilter}
+          onChange={actions.setCategoryFilter}
         />
         <FilterItem
           title="اولویت‌ها"
           listItems={priorities}
-          currentValue={priorityFilter}
-          onChange={setPriorityFilter}
+          currentValue={filters.priorityFilter}
+          onChange={actions.setPriorityFilter}
         />
         <FilterItem
           title="وضعیت"
           listItems={statuses}
-          currentValue={statusFilter}
-          onChange={setStatusFilter}
+          currentValue={filters.statusFilter}
+          onChange={actions.setStatusFilter}
         />
         <FilterItem
           title="مرتب سازی"
           listItems={sortOptions}
-          currentValue={sortOption}
-          onChange={setSortOption}
+          currentValue={filters.sortOption}
+          onChange={actions.setSortOption}
         />
       </div>
     </Block>
