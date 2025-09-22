@@ -1,13 +1,10 @@
 import React, { memo } from 'react';
 import TaskItem from './taskItem';
-import { TaskItemType } from '../../types/tasks';
+import { useTaskFiltersContext } from '../../contexts/TaskFiltersContext';
 
-type TasksListProps = {
-  taskList: TaskItemType[];
-};
-
-const TasksList = memo(function TasksList({ taskList }: TasksListProps) {
-  if (taskList.length === 0) {
+const TasksList = memo(function TasksList() {
+  const { filteredTasks } = useTaskFiltersContext();
+  if (filteredTasks.length === 0) {
     return (
       <div className="text-center py-8" role="status" aria-live="polite">
         <p className="text-gray-500">هیچ وظیفه‌ای یافت نشد.</p>
@@ -17,7 +14,7 @@ const TasksList = memo(function TasksList({ taskList }: TasksListProps) {
 
   return (
     <section aria-label="لیست وظایف" role="list">
-      {taskList.map(task => (
+      {filteredTasks.map(task => (
         <TaskItem
           key={task.taskId}
           taskId={task.taskId}

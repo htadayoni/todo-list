@@ -1,16 +1,14 @@
 'use client';
 import React, { memo, useCallback } from 'react';
 import Block from '../layout/block';
+import { useTaskFiltersContext } from '../../contexts/TaskFiltersContext';
 
-type SearchProps = {
-  searchText: string;
-  setSearchText: (value: string) => void;
-};
+const Search = memo(function Search() {
+  const { filters, actions } = useTaskFiltersContext();
 
-const Search = memo(function Search({ searchText, setSearchText }: SearchProps) {
   const handleInputChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchText(event.target.value);
-  }, [setSearchText]);
+    actions.setSearchText(event.target.value);
+  }, [actions.setSearchText]);
 
   return (
     <Block>
@@ -19,7 +17,7 @@ const Search = memo(function Search({ searchText, setSearchText }: SearchProps) 
           type="text"
           placeholder="جستجو در وظایف..."
           className="border border-gray-300 rounded-md p-2 w-full pr-10 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          value={searchText}
+          value={filters.searchText}
           onChange={handleInputChange}
           aria-label="جستجو در وظایف"
           role="searchbox"

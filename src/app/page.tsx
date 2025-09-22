@@ -4,8 +4,7 @@ import dynamic from 'next/dynamic';
 import Search from '../components/search';
 import Filters from '../components/filters';
 import Overview from '../components/overview';
-import { taskList } from '../mocks/tasks';
-import { useTaskFilters } from '../hooks/useTaskFilters';
+import { TaskFiltersProvider } from '../contexts/TaskFiltersContext';
 
 // Dynamic import for better code splitting
 const TasksList = dynamic(() => import('../components/tasks'), {
@@ -16,9 +15,7 @@ const TasksList = dynamic(() => import('../components/tasks'), {
   ssr: false
 });
 
-export default function Home() {
-  const { filters, actions, filteredTasks } = useTaskFilters(taskList);
-
+function HomeContent() {
   return (
     <>
       {/* Structured Data for SEO */}
@@ -44,22 +41,21 @@ export default function Home() {
       <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16">
         <div className="container h-full">
           <div className="grid gap-4">
-            <Filters
-              categoryFilter={filters.categoryFilter}
-              setCategoryFilter={actions.setCategoryFilter}
-              priorityFilter={filters.priorityFilter}
-              setPriorityFilter={actions.setPriorityFilter}
-              statusFilter={filters.statusFilter}
-              setStatusFilter={actions.setStatusFilter}
-              sortOption={filters.sortOption}
-              setSortOption={actions.setSortOption}
-            />
-            <Search searchText={filters.searchText} setSearchText={actions.setSearchText} />
-            <Overview taskList={filteredTasks} />
-            <TasksList taskList={filteredTasks} />
+            <Filters />
+            <Search />
+            <Overview />
+            <TasksList />
           </div>
         </div>
       </div>
     </>
+  );
+}
+
+export default function Home() {
+  return (
+    <TaskFiltersProvider>
+      <HomeContent />
+    </TaskFiltersProvider>
   );
 }

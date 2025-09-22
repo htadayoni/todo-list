@@ -1,20 +1,17 @@
 import React, { memo, useMemo } from 'react';
 import Block from '../layout/block';
 import NumberBlock from './numberBlock';
-import { TaskItemType } from '../../types/tasks';
 import { countTasksByStatus } from '../../utils/list';
+import { useTaskFiltersContext } from '../../contexts/TaskFiltersContext';
 
-type OverviewProps = {
-  taskList: TaskItemType[];
-};
-
-const Overview = memo(function Overview({ taskList }: OverviewProps) {
+const Overview = memo(function Overview() {
+  const { filteredTasks } = useTaskFiltersContext();
   const stats = useMemo(() => ({
-    total: taskList?.length || 0,
-    notStarted: countTasksByStatus(taskList, 'notStarted'),
-    inProgress: countTasksByStatus(taskList, 'inProgress'),
-    done: countTasksByStatus(taskList, 'done'),
-  }), [taskList]);
+    total: filteredTasks?.length || 0,
+    notStarted: countTasksByStatus(filteredTasks, 'notStarted'),
+    inProgress: countTasksByStatus(filteredTasks, 'inProgress'),
+    done: countTasksByStatus(filteredTasks, 'done'),
+  }), [filteredTasks]);
 
   return (
     <Block>
