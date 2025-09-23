@@ -11,6 +11,8 @@ import {
 } from '@heroicons/react/24/solid';
 import { TaskItemType } from '../../types/tasks';
 
+const DEFAULT_CHIP = { label: '', color: '', textColor: '' };
+
 const TaskItem = memo(function TaskItem({
   taskId,
   title,
@@ -21,8 +23,8 @@ const TaskItem = memo(function TaskItem({
   status,
   category,
 }: TaskItemType) {
-  const priorityTag = useMemo(() => priorityChip[priority] || {}, [priority]);
-  const statusTag = useMemo(() => statusChip[status] || {}, [status]);
+  const priorityTag = useMemo(() => priorityChip[priority] || DEFAULT_CHIP, [priority]);
+  const statusTag = useMemo(() => statusChip[status] || DEFAULT_CHIP, [status]);
 
   const formattedDueDate = useMemo(() => dueDate.toLocaleDateString('fa-IR'), [dueDate]);
   const formattedCreatedDate = useMemo(() => createdAt.toLocaleDateString('fa-IR'), [createdAt]);
