@@ -1,6 +1,7 @@
 import './globals.css';
 import Header from '../components/layout/header';
 import ErrorBoundary from '../components/error-boundary';
+import NoSSR from '../components/NoSSR';
 import React from 'react';
 
 export const metadata = {
@@ -25,13 +26,18 @@ type RootLayoutProps = {
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="fa" dir="rtl">
-      <body className={`antialiased`}>
-        <ErrorBoundary>
-          <Header />
-          <main role="main">
-            {children}
-          </main>
-        </ErrorBoundary>
+      <body
+        className={`antialiased`}
+        suppressHydrationWarning={true}
+      >
+        <NoSSR>
+          <ErrorBoundary>
+            <Header />
+            <main role="main">
+              {children}
+            </main>
+          </ErrorBoundary>
+        </NoSSR>
       </body>
     </html>
   );
