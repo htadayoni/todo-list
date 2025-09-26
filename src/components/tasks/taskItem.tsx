@@ -1,4 +1,4 @@
-import React, { memo, useMemo } from 'react';
+import React, { memo, useMemo, useState } from 'react';
 import Block from '../layout/block';
 import Chip from '../ui/chip';
 import { priorityChip, statusChip } from '../../constants/tasks';
@@ -10,6 +10,7 @@ import {
   ClockIcon,
 } from '@heroicons/react/24/solid';
 import { TaskItemType } from '../../types/tasks';
+import TaskDetailsPopup from './TaskDetailsPopup';
 
 const DEFAULT_CHIP = { label: '', color: '', textColor: '' };
 
@@ -23,18 +24,54 @@ const TaskItem = memo(function TaskItem({
   status,
   category,
 }: TaskItemType) {
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+
   const priorityTag = useMemo(() => priorityChip[priority] || DEFAULT_CHIP, [priority]);
   const statusTag = useMemo(() => statusChip[status] || DEFAULT_CHIP, [status]);
 
   const formattedDueDate = useMemo(() => dueDate.toLocaleDateString('fa-IR'), [dueDate]);
   const formattedCreatedDate = useMemo(() => createdAt.toLocaleDateString('fa-IR'), [createdAt]);
 
+  const handleTitleClick = () => {
+    setIsPopupOpen(true);
+  };
+
+  const handleClosePopup = () => {
+    setIsPopupOpen(false);
+  };
+
+  const taskData: TaskItemType = {
+    taskId,
+    title,
+    description,
+    dueDate,
+    createdAt,
+    priority,
+    status,
+    category,
+  };
+
   return (
     <Block>
       <article role="listitem" aria-labelledby={`task-title-${taskId}`}>
         <div className="flex justify-between">
           <div className="flex gap-2 mb-2">
-            <h3 id={`task-title-${taskId}`} className="font-bold">{title}</h3>
+            <h3
+              id={`task-title-${taskId}`}
+              className="font-bold cursor-pointer hover:text-blue-600 transition-colors"
+              onClick={handleTitleClick}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  handleTitleClick();
+                }
+              }}
+              aria-label={`نمایش جزئیات وظیفه: ${title}`}
+            >
+              {title}
+            </h3>
             <Chip
               label={priorityTag.label}
               color={priorityTag.color}
@@ -89,6 +126,12 @@ const TaskItem = memo(function TaskItem({
           </div>
         </div>
       </article>
+
+      <TaskDetailsPopup
+        task={taskData}
+        isOpen={isPopupOpen}
+        onClose={handleClosePopup}
+      />
     </Block>
   );
 });
