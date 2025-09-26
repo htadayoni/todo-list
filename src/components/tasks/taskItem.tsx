@@ -1,4 +1,5 @@
 import React, { memo, useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Block from '../layout/block';
 import Chip from '../ui/chip';
 import { priorityChip, statusChip } from '../../constants/tasks';
@@ -30,6 +31,7 @@ const TaskItem = memo(function TaskItem({
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
   const { actions } = useTaskFiltersContext();
+  const router = useRouter();
 
   const priorityTag = useMemo(() => priorityChip[priority] || DEFAULT_CHIP, [priority]);
   const statusTag = useMemo(() => statusChip[status] || DEFAULT_CHIP, [status]);
@@ -56,6 +58,10 @@ const TaskItem = memo(function TaskItem({
 
   const handleDeleteCancel = () => {
     setIsDeleteConfirmOpen(false);
+  };
+
+  const handleEditClick = () => {
+    router.push(`/edit-task/${taskId}`);
   };
 
   const taskData: TaskItemType = {
@@ -109,6 +115,7 @@ const TaskItem = memo(function TaskItem({
               className="p-1 hover:bg-gray-100 rounded"
               aria-label="ویرایش وظیفه"
               title="ویرایش وظیفه"
+              onClick={handleEditClick}
             >
               <PencilSquareIcon className="h-5 w-5 text-gray-500" />
             </button>

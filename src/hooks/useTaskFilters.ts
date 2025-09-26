@@ -19,6 +19,7 @@ export type TaskFilterActions = {
     setSortOption: (value: string) => void;
     resetFilters: () => void;
     deleteTask: (taskId: string) => void;
+    getTaskById: (taskId: string) => TaskItemType | undefined;
 }
 
 export function useTaskFilters() {
@@ -40,6 +41,10 @@ export function useTaskFilters() {
     const deleteTask = useCallback((taskId: string) => {
         setTasks(prevTasks => prevTasks.filter(task => task.taskId !== taskId));
     }, []);
+
+    const getTaskById = useCallback((taskId: string) => {
+        return tasks.find(task => task.taskId === taskId);
+    }, [tasks]);
 
     const filteredTasks = useMemo(() => {
         let filtered = tasks.filter(task => {
@@ -84,6 +89,7 @@ export function useTaskFilters() {
         setSortOption,
         resetFilters,
         deleteTask,
+        getTaskById,
     };
 
     return {
