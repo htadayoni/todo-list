@@ -8,6 +8,7 @@ import {
     ClockIcon,
 } from '@heroicons/react/24/solid';
 import Chip from '../ui/chip';
+import { formatPersianDate } from '../../utils/date';
 
 interface TaskDetailsPopupProps {
     task: TaskItemType | null;
@@ -41,8 +42,8 @@ const TaskDetailsPopup: React.FC<TaskDetailsPopupProps> = ({ task, isOpen, onClo
     const priorityTag = priorityChip[task.priority] || DEFAULT_CHIP;
     const statusTag = statusChip[task.status] || DEFAULT_CHIP;
 
-    const formattedDueDate = task.dueDate.toLocaleDateString('fa-IR');
-    const formattedCreatedDate = task.createdAt.toLocaleDateString('fa-IR');
+    const formattedDueDate = formatPersianDate(task.dueDate);
+    const formattedCreatedDate = formatPersianDate(task.createdAt);
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
