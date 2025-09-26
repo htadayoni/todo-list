@@ -77,7 +77,11 @@ const TaskItem = memo(function TaskItem({
 
   return (
     <Block>
-      <article role="listitem" aria-labelledby={`task-title-${taskId}`}>
+      <article
+        role="listitem"
+        aria-labelledby={`task-title-${taskId}`}
+        className="group"
+      >
         <div className="flex justify-between">
           <div className="flex gap-2 mb-2">
             <h3
@@ -131,7 +135,7 @@ const TaskItem = memo(function TaskItem({
           </div>
         </div>
         <p className="mb-2" id={`task-description-${taskId}`}>{description}</p>
-        <div className="flex flex-wrap gap-4 text-sm">
+        <div className="flex flex-wrap gap-4 text-sm max-h-0 opacity-0 overflow-hidden transition-all duration-300 ease-in-out group-hover:max-h-20 group-hover:opacity-100">
           <div className="flex items-center">
             <FolderIcon className="h-4 w-4 text-gray-500" aria-hidden="true" />
             <span className="text-gray-600 mr-2" aria-label={`دسته‌بندی: ${category}`}>
