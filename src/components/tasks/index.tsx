@@ -13,7 +13,7 @@ const TasksList = memo(function TasksList() {
   }
 
   return (
-    <section aria-label="لیست وظایف" role="list">
+    <section aria-label="لیست وظایف" role="list" className="space-y-3">
       {filteredTasks.map(task => (
         <TaskItem
           key={task.taskId}
