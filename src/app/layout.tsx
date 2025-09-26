@@ -2,6 +2,7 @@ import './globals.css';
 import Header from '../components/layout/header';
 import ErrorBoundary from '../components/error-boundary';
 import NoSSR from '../components/NoSSR';
+import { TaskFiltersProvider } from '../contexts/TaskFiltersContext';
 import React from 'react';
 
 export const metadata = {
@@ -31,12 +32,14 @@ export default function RootLayout({ children }: RootLayoutProps) {
         suppressHydrationWarning={true}
       >
         <NoSSR>
-          <ErrorBoundary>
-            <Header />
-            <main role="main">
-              {children}
-            </main>
-          </ErrorBoundary>
+          <TaskFiltersProvider>
+            <ErrorBoundary>
+              <Header />
+              <main role="main">
+                {children}
+              </main>
+            </ErrorBoundary>
+          </TaskFiltersProvider>
         </NoSSR>
       </body>
     </html>

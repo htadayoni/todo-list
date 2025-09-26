@@ -5,6 +5,9 @@ import { TaskItemType, StatusType } from '../../types/tasks';
 
 interface TaskFormProps {
     onSuccess: () => void;
+    taskId?: string;
+    isEditMode?: boolean;
+    initialData?: TaskItemType;
 }
 
 interface TaskFormData {
@@ -16,7 +19,7 @@ interface TaskFormData {
     category: string;
 }
 
-const TaskForm: React.FC<TaskFormProps> = ({ onSuccess }) => {
+const TaskForm: React.FC<TaskFormProps> = ({ onSuccess, taskId, isEditMode = false, initialData }) => {
     const {
         register,
         handleSubmit,
@@ -24,49 +27,74 @@ const TaskForm: React.FC<TaskFormProps> = ({ onSuccess }) => {
         reset
     } = useForm<TaskFormData>({
         defaultValues: {
-            title: '',
-            description: '',
-            dueDate: '',
-            priority: 'medium',
-            status: 'notStarted',
-            category: ''
-        }
+            title: initialData?.title || '',
+            description: initialData?.description || '',
+            dueDate: initialData?.dueDate ? initialData.dueDate.toISOString().split('T')[0] : '',
+            priority: initialData?.priority || 'medium',
+            status: initialData?.status || 'notStarted',
+            category: initialData?.category || ''
+        } as TaskFormData
     });
 
     const onSubmit = async (data: TaskFormData) => {
         try {
-            // Create new task object
-            const newTask: TaskItemType = {
-                taskId: Date.now().toString(), // Simple ID generation
-                title: data.title,
-                description: data.description,
-                dueDate: new Date(data.dueDate),
-                createdAt: new Date(),
-                priority: data.priority,
-                status: data.status,
-                category: data.category
-            };
+            if (isEditMode) {
+                // Update existing task
+                const updatedTask: TaskItemType = {
+                    taskId: taskId!,
+                    title: data.title,
+                    description: data.description,
+                    dueDate: new Date(data.dueDate),
+                    createdAt: initialData?.createdAt || new Date(),
+                    priority: data.priority,
+                    status: data.status,
+                    category: data.category
+                };
 
-            // TODO: Here you would typically save to your backend/database
-            // For now, we'll just log it and show success
-            console.log('New task created:', newTask);
+                // TODO: Here you would typically update your backend/database
+                // For now, we'll just log it and show success
+                console.log('Task updated:', updatedTask);
 
-            // Simulate API call delay
-            await new Promise(resolve => setTimeout(resolve, 1000));
+                // Simulate API call delay
+                await new Promise(resolve => setTimeout(resolve, 1000));
 
-            // Show success message and redirect
-            alert('وظیفه با موفقیت ایجاد شد!');
-            reset();
-            onSuccess();
+                // Show success message and redirect
+                alert('وظیفه با موفقیت به‌روزرسانی شد!');
+                onSuccess();
+            } else {
+                // Create new task object
+                const newTask: TaskItemType = {
+                    taskId: Date.now().toString(), // Simple ID generation
+                    title: data.title,
+                    description: data.description,
+                    dueDate: new Date(data.dueDate),
+                    createdAt: new Date(),
+                    priority: data.priority,
+                    status: data.status,
+                    category: data.category
+                };
+
+                // TODO: Here you would typically save to your backend/database
+                // For now, we'll just log it and show success
+                console.log('New task created:', newTask);
+
+                // Simulate API call delay
+                await new Promise(resolve => setTimeout(resolve, 1000));
+
+                // Show success message and redirect
+                alert('وظیفه با موفقیت ایجاد شد!');
+                reset();
+                onSuccess();
+            }
 
         } catch (error) {
-            console.error('Error creating task:', error);
-            alert('خطا در ایجاد وظیفه. لطفاً دوباره تلاش کنید.');
+            console.error(`Error ${isEditMode ? 'updating' : 'creating'} task:`, error);
+            alert(`خطا در ${isEditMode ? 'به‌روزرسانی' : 'ایجاد'} وظیفه. لطفاً دوباره تلاش کنید.`);
         }
     };
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={handleSubmit(onSubmit as any)} className="space-y-6">
             <div>
                 <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
                     عنوان وظیفه *
@@ -205,7 +233,10 @@ const TaskForm: React.FC<TaskFormProps> = ({ onSuccess }) => {
                     disabled={isSubmitting}
                     className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
-                    {isSubmitting ? 'در حال ایجاد...' : 'ایجاد وظیفه'}
+                    {isSubmitting
+                        ? (isEditMode ? 'در حال به‌روزرسانی...' : 'در حال ایجاد...')
+                        : (isEditMode ? 'به‌روزرسانی وظیفه' : 'ایجاد وظیفه')
+                    }
                 </button>
             </div>
         </form>

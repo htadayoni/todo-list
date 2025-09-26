@@ -4,7 +4,6 @@ import dynamic from 'next/dynamic';
 import Search from '../components/search';
 import Filters from '../components/filters';
 import Overview from '../components/overview';
-import { TaskFiltersProvider } from '../contexts/TaskFiltersContext';
 
 // Dynamic import for better code splitting
 const TasksList = dynamic(() => import('../components/tasks'), {
@@ -53,9 +52,5 @@ function HomeContent() {
 }
 
 export default function Home() {
-  return (
-    <TaskFiltersProvider>
-      <HomeContent />
-    </TaskFiltersProvider>
-  );
+  return <HomeContent />;
 }
