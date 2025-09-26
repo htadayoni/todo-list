@@ -1,6 +1,7 @@
 import { useState, useMemo, useCallback } from 'react';
-import { taskList } from '../mocks/tasks';
+import { taskList as initialTaskList } from '../mocks/tasks';
 import moment from 'moment-jalaali';
+import { TaskItemType } from '../types/tasks';
 
 export type TaskFilters = {
     searchText: string;
@@ -17,6 +18,7 @@ export type TaskFilterActions = {
     setStatusFilter: (value: string) => void;
     setSortOption: (value: string) => void;
     resetFilters: () => void;
+    deleteTask: (taskId: string) => void;
 }
 
 export function useTaskFilters() {
@@ -25,6 +27,7 @@ export function useTaskFilters() {
     const [priorityFilter, setPriorityFilter] = useState<string>('all');
     const [statusFilter, setStatusFilter] = useState<string>('all');
     const [sortOption, setSortOption] = useState<string>('latest');
+    const [tasks, setTasks] = useState<TaskItemType[]>(initialTaskList);
 
     const resetFilters = useCallback(() => {
         setSearchText('');
@@ -34,8 +37,12 @@ export function useTaskFilters() {
         setSortOption('latest');
     }, []);
 
+    const deleteTask = useCallback((taskId: string) => {
+        setTasks(prevTasks => prevTasks.filter(task => task.taskId !== taskId));
+    }, []);
+
     const filteredTasks = useMemo(() => {
-        let filtered = taskList.filter(task => {
+        let filtered = tasks.filter(task => {
             if (categoryFilter !== 'all' && task.category !== categoryFilter) {
                 return false;
             }
@@ -59,7 +66,7 @@ export function useTaskFilters() {
             }
             return 0;
         });
-    }, [taskList, searchText, categoryFilter, priorityFilter, statusFilter, sortOption]);
+    }, [tasks, searchText, categoryFilter, priorityFilter, statusFilter, sortOption]);
 
     const filters: TaskFilters = {
         searchText,
@@ -76,6 +83,7 @@ export function useTaskFilters() {
         setStatusFilter,
         setSortOption,
         resetFilters,
+        deleteTask,
     };
 
     return {
