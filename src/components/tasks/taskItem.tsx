@@ -11,6 +11,7 @@ import {
 } from '@heroicons/react/24/solid';
 import { TaskItemType } from '../../types/tasks';
 import TaskDetailsPopup from './TaskDetailsPopup';
+import { formatPersianDate } from '../../utils/date';
 
 const DEFAULT_CHIP = { label: '', color: '', textColor: '' };
 
@@ -29,8 +30,8 @@ const TaskItem = memo(function TaskItem({
   const priorityTag = useMemo(() => priorityChip[priority] || DEFAULT_CHIP, [priority]);
   const statusTag = useMemo(() => statusChip[status] || DEFAULT_CHIP, [status]);
 
-  const formattedDueDate = useMemo(() => dueDate.toLocaleDateString('fa-IR'), [dueDate]);
-  const formattedCreatedDate = useMemo(() => createdAt.toLocaleDateString('fa-IR'), [createdAt]);
+  const formattedDueDate = useMemo(() => formatPersianDate(dueDate), [dueDate]);
+  const formattedCreatedDate = useMemo(() => formatPersianDate(createdAt), [createdAt]);
 
   const handleTitleClick = () => {
     setIsPopupOpen(true);

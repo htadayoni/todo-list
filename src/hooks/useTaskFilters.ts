@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback } from 'react';
 import { taskList } from '../mocks/tasks';
+import moment from 'moment-jalaali';
 
 export type TaskFilters = {
     searchText: string;
@@ -52,9 +53,9 @@ export function useTaskFilters() {
         // Sort the filtered tasks
         return filtered.sort((a, b) => {
             if (sortOption === 'latest') {
-                return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+                return moment(b.createdAt).valueOf() - moment(a.createdAt).valueOf();
             } else if (sortOption === 'oldest') {
-                return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+                return moment(a.createdAt).valueOf() - moment(b.createdAt).valueOf();
             }
             return 0;
         });
