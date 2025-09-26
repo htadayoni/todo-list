@@ -11,7 +11,9 @@ import {
 } from '@heroicons/react/24/solid';
 import { TaskItemType } from '../../types/tasks';
 import TaskDetailsPopup from './TaskDetailsPopup';
+import ConfirmPopup from '../ui/ConfirmPopup';
 import { formatPersianDate } from '../../utils/date';
+import { useTaskFiltersContext } from '../../contexts/TaskFiltersContext';
 
 const DEFAULT_CHIP = { label: '', color: '', textColor: '' };
 
@@ -26,6 +28,8 @@ const TaskItem = memo(function TaskItem({
   category,
 }: TaskItemType) {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+  const { actions } = useTaskFiltersContext();
 
   const priorityTag = useMemo(() => priorityChip[priority] || DEFAULT_CHIP, [priority]);
   const statusTag = useMemo(() => statusChip[status] || DEFAULT_CHIP, [status]);
@@ -39,6 +43,19 @@ const TaskItem = memo(function TaskItem({
 
   const handleClosePopup = () => {
     setIsPopupOpen(false);
+  };
+
+  const handleDeleteClick = () => {
+    setIsDeleteConfirmOpen(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    actions.deleteTask(taskId);
+    setIsDeleteConfirmOpen(false);
+  };
+
+  const handleDeleteCancel = () => {
+    setIsDeleteConfirmOpen(false);
   };
 
   const taskData: TaskItemType = {
@@ -100,6 +117,7 @@ const TaskItem = memo(function TaskItem({
               className="p-1 hover:bg-gray-100 rounded"
               aria-label="حذف وظیفه"
               title="حذف وظیفه"
+              onClick={handleDeleteClick}
             >
               <TrashIcon className="h-5 w-5 text-gray-500" />
             </button>
@@ -132,6 +150,16 @@ const TaskItem = memo(function TaskItem({
         task={taskData}
         isOpen={isPopupOpen}
         onClose={handleClosePopup}
+      />
+
+      <ConfirmPopup
+        isOpen={isDeleteConfirmOpen}
+        onClose={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        title="حذف وظیفه"
+        message={`آیا مطمئن هستید که می‌خواهید وظیفه "${title}" را حذف کنید؟ این عمل قابل بازگشت نیست.`}
+        confirmText="حذف"
+        cancelText="انصراف"
       />
     </Block>
   );
