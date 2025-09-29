@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import React, { memo } from 'react';
 
 const Header = memo(function Header() {
@@ -19,17 +20,19 @@ const Header = memo(function Header() {
               />
               <h1 className="text-lg font-semibold mr-4">مدیریت وظایف من</h1>
             </div>
-            <div className="flex items-center" role="complementary" aria-label="اطلاعات کاربر">
-              <Image
-                src="/avatar.png"
-                alt="آواتار کاربر"
-                width={32}
-                height={32}
-                priority
-                sizes="32px"
-                className="object-contain rounded-full"
-              />
-              <span className="mr-2" aria-label="پیام خوشامدگویی">خوش آمدید!</span>
+            <div className="flex items-center space-x-4" role="complementary" aria-label="منوی کاربر">
+              <Link
+                href="/login"
+                className="text-sm text-gray-600 hover:text-indigo-600 transition-colors duration-200"
+              >
+                ورود
+              </Link>
+              <Link
+                href="/register"
+                className="text-sm bg-indigo-600 text-white px-3 py-1 rounded-md hover:bg-indigo-700 transition-colors duration-200"
+              >
+                ثبت نام
+              </Link>
             </div>
           </div>
         </div>
