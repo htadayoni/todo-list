@@ -1,7 +1,7 @@
-import { useState, useMemo, useCallback } from 'react';
-import { taskList as initialTaskList } from '../mocks/tasks';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import moment from 'moment-jalaali';
 import { TaskItemType } from '../types/tasks';
+import { fetchUserTasks, deleteTask as deleteTaskFromSupabase } from '../lib/supabase/tasks';
 
 export type TaskFilters = {
     searchText: string;
@@ -20,6 +20,7 @@ export type TaskFilterActions = {
     resetFilters: () => void;
     deleteTask: (taskId: string) => void;
     getTaskById: (taskId: string) => TaskItemType | undefined;
+    refreshTasks: () => Promise<void>;
 }
 
 export function useTaskFilters() {
@@ -28,7 +29,9 @@ export function useTaskFilters() {
     const [priorityFilter, setPriorityFilter] = useState<string>('all');
     const [statusFilter, setStatusFilter] = useState<string>('all');
     const [sortOption, setSortOption] = useState<string>('latest');
-    const [tasks, setTasks] = useState<TaskItemType[]>(initialTaskList);
+    const [tasks, setTasks] = useState<TaskItemType[]>([]);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
 
     const resetFilters = useCallback(() => {
         setSearchText('');
@@ -38,16 +41,59 @@ export function useTaskFilters() {
         setSortOption('latest');
     }, []);
 
-    const deleteTask = useCallback((taskId: string) => {
-        setTasks(prevTasks => prevTasks.filter(task => task.taskId !== taskId));
+    // Load tasks from Supabase on component mount
+    useEffect(() => {
+        const loadTasks = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+                const userTasks = await fetchUserTasks();
+                setTasks(userTasks);
+            } catch (err) {
+                console.error('Error loading tasks:', err);
+                setError('خطا در بارگذاری وظایف');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadTasks();
+    }, []);
+
+    const deleteTask = useCallback(async (taskId: string) => {
+        try {
+            const success = await deleteTaskFromSupabase(taskId);
+            if (success) {
+                setTasks(prevTasks => prevTasks.filter(task => task.taskId !== taskId));
+            } else {
+                setError('خطا در حذف وظیفه');
+            }
+        } catch (err) {
+            console.error('Error deleting task:', err);
+            setError('خطا در حذف وظیفه');
+        }
     }, []);
 
     const getTaskById = useCallback((taskId: string) => {
         return tasks.find(task => task.taskId === taskId);
     }, [tasks]);
 
+    const refreshTasks = useCallback(async () => {
+        try {
+            setLoading(true);
+            setError(null);
+            const userTasks = await fetchUserTasks();
+            setTasks(userTasks);
+        } catch (err) {
+            console.error('Error refreshing tasks:', err);
+            setError('خطا در بارگذاری وظایف');
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
     const filteredTasks = useMemo(() => {
-        let filtered = tasks.filter(task => {
+        const filtered = tasks.filter(task => {
             if (categoryFilter !== 'all' && task.category !== categoryFilter) {
                 return false;
             }
@@ -90,11 +136,14 @@ export function useTaskFilters() {
         resetFilters,
         deleteTask,
         getTaskById,
+        refreshTasks,
     };
 
     return {
         filters,
         actions,
         filteredTasks,
+        loading,
+        error,
     };
 }

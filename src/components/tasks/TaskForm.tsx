@@ -1,7 +1,9 @@
 'use client';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { TaskItemType, StatusType } from '../../types/tasks';
+import { TaskItemType, StatusType, DatabaseCategory } from '../../types/tasks';
+import { createTask, updateTask, fetchAllCategories } from '../../lib/supabase/tasks';
+import { useTaskFiltersContext } from '../../contexts/TaskFiltersContext';
 
 interface TaskFormProps {
     onSuccess: () => void;
@@ -20,6 +22,10 @@ interface TaskFormData {
 }
 
 const TaskForm: React.FC<TaskFormProps> = ({ onSuccess, taskId, isEditMode = false, initialData }) => {
+    const { actions } = useTaskFiltersContext();
+    const [categories, setCategories] = useState<DatabaseCategory[]>([]);
+    const [loadingCategories, setLoadingCategories] = useState<boolean>(true);
+
     const {
         register,
         handleSubmit,
@@ -32,59 +38,90 @@ const TaskForm: React.FC<TaskFormProps> = ({ onSuccess, taskId, isEditMode = fal
             dueDate: initialData?.dueDate ? initialData.dueDate.toISOString().split('T')[0] : '',
             priority: initialData?.priority || 'medium',
             status: initialData?.status || 'notStarted',
-            category: initialData?.category || ''
+            category: '' // Will be set after categories are loaded
         } as TaskFormData
     });
 
+
+    // Fetch categories on component mount
+    useEffect(() => {
+        const loadCategories = async () => {
+            try {
+                setLoadingCategories(true);
+                const allCategories = await fetchAllCategories();
+                setCategories(allCategories);
+
+                // If in edit mode and we have initial data, set the category
+                if (isEditMode && initialData?.category) {
+                    const matchingCategory = allCategories.find(cat => cat.name === initialData.category);
+                    if (matchingCategory) {
+                        reset({
+                            title: initialData.title,
+                            description: initialData.description,
+                            dueDate: initialData.dueDate ? initialData.dueDate.toISOString().split('T')[0] : '',
+                            priority: initialData.priority,
+                            status: initialData.status,
+                            category: matchingCategory.id
+                        } as TaskFormData);
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading categories:', error);
+            } finally {
+                setLoadingCategories(false);
+            }
+        };
+
+        loadCategories();
+    }, [isEditMode, initialData, reset]);
+
     const onSubmit = async (data: TaskFormData) => {
         try {
+            // Get the selected category ID
+            const selectedCategory = categories.find(cat => cat.id === data.category);
+            const categoryId = selectedCategory?.id || null;
+
             if (isEditMode) {
                 // Update existing task
-                const updatedTask: TaskItemType = {
-                    taskId: taskId!,
+                const updateData = {
                     title: data.title,
-                    description: data.description,
-                    dueDate: new Date(data.dueDate),
-                    createdAt: initialData?.createdAt || new Date(),
+                    description: data.description || undefined,
+                    due_date: data.dueDate || undefined,
                     priority: data.priority,
                     status: data.status,
-                    category: data.category
+                    category_id: categoryId || undefined,
                 };
 
-                // TODO: Here you would typically update your backend/database
-                // For now, we'll just log it and show success
-                console.log('Task updated:', updatedTask);
+                const updatedTask = await updateTask(taskId!, updateData);
 
-                // Simulate API call delay
-                await new Promise(resolve => setTimeout(resolve, 1000));
-
-                // Show success message and redirect
-                alert('وظیفه با موفقیت به‌روزرسانی شد!');
-                onSuccess();
+                if (updatedTask) {
+                    alert('وظیفه با موفقیت به‌روزرسانی شد!');
+                    await actions.refreshTasks();
+                    onSuccess();
+                } else {
+                    throw new Error('Failed to update task');
+                }
             } else {
-                // Create new task object
-                const newTask: TaskItemType = {
-                    taskId: Date.now().toString(), // Simple ID generation
+                // Create new task
+                const taskData = {
                     title: data.title,
-                    description: data.description,
-                    dueDate: new Date(data.dueDate),
-                    createdAt: new Date(),
+                    description: data.description || undefined,
+                    due_date: data.dueDate || undefined,
                     priority: data.priority,
                     status: data.status,
-                    category: data.category
+                    category_id: categoryId || undefined,
                 };
 
-                // TODO: Here you would typically save to your backend/database
-                // For now, we'll just log it and show success
-                console.log('New task created:', newTask);
+                const newTask = await createTask(taskData);
 
-                // Simulate API call delay
-                await new Promise(resolve => setTimeout(resolve, 1000));
-
-                // Show success message and redirect
-                alert('وظیفه با موفقیت ایجاد شد!');
-                reset();
-                onSuccess();
+                if (newTask) {
+                    alert('وظیفه با موفقیت ایجاد شد!');
+                    await actions.refreshTasks();
+                    reset();
+                    onSuccess();
+                } else {
+                    throw new Error('Failed to create task');
+                }
             }
 
         } catch (error) {
@@ -201,19 +238,24 @@ const TaskForm: React.FC<TaskFormProps> = ({ onSuccess, taskId, isEditMode = fal
                     <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
                         دسته‌بندی
                     </label>
-                    <input
-                        type="text"
+                    <select
                         id="category"
                         {...register('category', {
-                            maxLength: {
-                                value: 50,
-                                message: 'دسته‌بندی نمی‌تواند بیش از ۵۰ کاراکتر باشد'
-                            }
+                            required: 'انتخاب دسته‌بندی الزامی است'
                         })}
                         className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.category ? 'border-red-500' : 'border-gray-300'
                             }`}
-                        placeholder="دسته‌بندی وظیفه"
-                    />
+                        disabled={loadingCategories}
+                    >
+                        <option value="">
+                            {loadingCategories ? 'در حال بارگذاری...' : 'انتخاب دسته‌بندی'}
+                        </option>
+                        {categories.map((category) => (
+                            <option key={category.id} value={category.id}>
+                                {category.name}
+                            </option>
+                        ))}
+                    </select>
                     {errors.category && (
                         <p className="mt-1 text-sm text-red-600">{errors.category.message}</p>
                     )}
