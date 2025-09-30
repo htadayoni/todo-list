@@ -8,7 +8,7 @@ const Search = memo(function Search() {
 
   const handleInputChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     actions.setSearchText(event.target.value);
-  }, [actions.setSearchText]);
+  }, [actions]);
 
   return (
     <Block>
