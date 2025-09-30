@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
+import { createClient } from '../../lib/supabase/client';
 import AuthLayout from '../../components/auth/AuthLayout';
 
 interface LoginFormData {
@@ -13,6 +14,7 @@ export default function LoginPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
     const router = useRouter();
+    const supabase = createClient();
 
     const {
         register,
@@ -25,16 +27,20 @@ export default function LoginPage() {
         setError('');
 
         try {
-            // TODO: Implement actual authentication logic
-            console.log('Login data:', data);
+            const { error } = await supabase.auth.signInWithPassword({
+                email: data.email,
+                password: data.password,
+            });
 
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            if (error) {
+                throw error;
+            }
 
-            // For now, just redirect to home page
+            // Redirect to home page (task list) after successful login
             router.push('/');
-        } catch (err) {
-            setError('خطا در ورود. لطفاً دوباره تلاش کنید.');
+        } catch (err: any) {
+            console.error('Login error:', err);
+            setError(err.message || 'خطا در ورود. لطفاً دوباره تلاش کنید.');
         } finally {
             setIsLoading(false);
         }

@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
 import dynamic from 'next/dynamic';
+import AuthGuard from '../components/auth/AuthGuard';
 import Search from '../components/search';
 import Filters from '../components/filters';
 import Overview from '../components/overview';
@@ -52,5 +53,9 @@ function HomeContent() {
 }
 
 export default function Home() {
-  return <HomeContent />;
+  return (
+    <AuthGuard>
+      <HomeContent />
+    </AuthGuard>
+  );
 }
