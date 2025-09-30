@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useRouter } from 'next/navigation';
+import { createClient } from '../../lib/supabase/client';
 import AuthLayout from '../../components/auth/AuthLayout';
 
 interface RegisterFormData {
@@ -15,7 +16,9 @@ interface RegisterFormData {
 export default function RegisterPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
+    const [success, setSuccess] = useState(false);
     const router = useRouter();
+    const supabase = createClient();
 
     const {
         register,
@@ -29,18 +32,28 @@ export default function RegisterPage() {
     const onSubmit = async (data: RegisterFormData) => {
         setIsLoading(true);
         setError('');
+        setSuccess(false);
 
         try {
-            // TODO: Implement actual registration logic
-            console.log('Registration data:', data);
+            const { error } = await supabase.auth.signUp({
+                email: data.email,
+                password: data.password,
+                options: {
+                    data: {
+                        first_name: data.firstName,
+                        last_name: data.lastName,
+                    }
+                }
+            });
 
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            if (error) {
+                throw error;
+            }
 
-            // For now, just redirect to home page
-            router.push('/');
-        } catch (err) {
-            setError('خطا در ثبت نام. لطفاً دوباره تلاش کنید.');
+            setSuccess(true);
+        } catch (err: any) {
+            console.error('Registration error:', err);
+            setError(err.message || 'خطا در ثبت نام. لطفاً دوباره تلاش کنید.');
         } finally {
             setIsLoading(false);
         }
@@ -167,6 +180,14 @@ export default function RegisterPage() {
                         )}
                     </div>
                 </div>
+
+                {success && (
+                    <div className="rounded-md bg-green-50 p-4">
+                        <div className="text-sm text-green-700">
+                            ثبت نام با موفقیت انجام شد! لطفاً ایمیل خود را بررسی کنید و روی لینک تأیید کلیک کنید.
+                        </div>
+                    </div>
+                )}
 
                 {error && (
                     <div className="rounded-md bg-red-50 p-4">
